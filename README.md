@@ -36,6 +36,8 @@ Create the proxy!
 KProxy.newProxyInstance<MyInterface>(TestInvocationHandler)
 ```
 
+*This project uses Kotlin version 1.6.10*
+
 ## License
 
-MIT - Give me a shoutout if you like! 🚀
+MIT - Give me a shout-out if you like this! 🚀

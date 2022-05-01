@@ -11,16 +11,34 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.kotlinFunction
 
+/**
+ * A lightweight wrapper around the [Proxy] API.
+ * @author shaun-wild
+ * */
 object KProxy {
-    inline fun <reified T> newProxyInstance(
+    /**
+     * Creates a new proxy instance of the given interface.
+     * @param kInvocationHandler The [KInvocationHandler] instance to handle the invocations.
+     * @param loader The classloader to use.
+     * @param T The interface class being proxied.
+     * @throws IllegalArgumentException if any of the restrictions on the parameters that may be passed to getProxyClass are violated
+     * @throws SecurityException if a security manager, s, is present and any of the following conditions is met:
+     * @see Proxy.newProxyInstance
+     * */
+    inline fun <reified T : Any> newProxyInstance(
         kInvocationHandler: KInvocationHandler,
         loader: ClassLoader = ClassLoader.getSystemClassLoader(),
-    ) = Proxy.newProxyInstance(
-        loader,
-        arrayOf(T::class.java),
-        KInvocationHandlerAdapter(kInvocationHandler, T::class)
-    ) as T
+    ) = newProxyInstance(kInvocationHandler, T::class, loader)
 
+    /**
+     * Creates a new proxy instance of the given interface.
+     * @param kInvocationHandler The [KInvocationHandler] instance to handle the invocations.
+     * @param loader The classloader to use.
+     * @param kClass The interface class being proxied.
+     * @throws IllegalArgumentException if any of the restrictions on the parameters that may be passed to getProxyClass are violated
+     * @throws SecurityException if a security manager, s, is present and any of the following conditions is met:
+     * @see Proxy.newProxyInstance
+     * */
     fun <T : Any> newProxyInstance(
         kInvocationHandler: KInvocationHandler,
         kClass: KClass<T>,
@@ -31,9 +49,17 @@ object KProxy {
         KInvocationHandlerAdapter(kInvocationHandler, kClass)
     ) as T
 
+    /**
+     * Returns true if the given [kClass] is a proxy.
+     * @see Proxy.isProxyClass
+     * */
     fun isProxyClass(kClass: KClass<*>) =
         Proxy.isProxyClass(kClass.java)
 
+    /**
+     * Returns the proxy class for the given interfaces.
+     * @see Proxy.getProxyClass
+     * */
     fun getProxyClass(vararg interfaces: KClass<*>) =
         Proxy.getProxyClass(ClassLoader.getSystemClassLoader(), *interfaces.map(KClass<*>::java).toTypedArray()).kotlin
 }
