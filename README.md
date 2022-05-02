@@ -44,16 +44,22 @@ class MyInvocationHandler : KInvocationHandler {
         TODO("Not yet implemented")
     }
 
-    override fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any? {
+    override fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<Any?>): Any? {
         TODO("Not yet implemented")
     }
 }
 ```
 
-Create the proxy!
+Create the proxy:
 
 ```kotlin
-KProxy.newProxyInstance<MyInterface>(TestInvocationHandler)
+val myProxy = KProxy.newProxyInstance<MyInterface>(MyInvocationHandler)
+```
+
+Now you can use your returned object and the proxy implementation will be used:
+
+```kotlin
+println(myProxy.foo)
 ```
 
 *This project uses Kotlin version 1.6.10*

@@ -92,7 +92,7 @@ interface KInvocationHandler {
      * @param kFunction The [KFunction] that was called.
      * @return The proxy value to be returned from the function.
      * */
-    fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any?
+    fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<Any?>): Any?
 }
 
 private class KInvocationHandlerAdapter(
@@ -107,7 +107,7 @@ private class KInvocationHandlerAdapter(
         .filterIsInstance<KMutableProperty<*>>()
         .associateBy { it.setter.javaMethod }
 
-    override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>?): Any? {
         methodGetterMap[method]?.let {
             return kInvocationHandler.invokeKPropertyRead(proxy, it)
         }
@@ -116,6 +116,6 @@ private class KInvocationHandlerAdapter(
             return kInvocationHandler.invokeKPropertyWrite(proxy, it, args?.firstOrNull())
         }
 
-        return kInvocationHandler.invokeKFunction(proxy, method.kotlinFunction!!, args)
+        return kInvocationHandler.invokeKFunction(proxy, method.kotlinFunction!!, args ?: emptyArray())
     }
 }

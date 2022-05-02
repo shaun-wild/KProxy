@@ -24,7 +24,7 @@ internal class KProxyTest {
     fun kInvocationHandler_invokeKFunction_returnsProxyValue() {
         every { proxyMock.invokeKFunction(any(), any(), any()) } returns KFUNCTION
         assertEquals(KFUNCTION, proxy.getBaz())
-        verify { proxyMock.invokeKFunction(any(), any(), any()) }
+        verify { proxyMock.invokeKFunction(any(), any(), emptyArray()) }
     }
 
     @Test
