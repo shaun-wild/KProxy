@@ -2,9 +2,25 @@
 
 A lightweight Kotlin wrapper of the Proxy API.
 
+[![](https://jitpack.io/v/shaun-wild/KProxy.svg)](https://jitpack.io/#shaun-wild/KProxy)
+
 -----
 
-[![](https://jitpack.io/v/shaun-wild/KProxy.svg)](https://jitpack.io/#shaun-wild/KProxy)
+## Installation
+
+Add jitpack to your repositories.
+
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+```
+
+Add the dependency:
+
+```kotlin
+implementation("com.github.shaun-wild:KProxy:[version]")
+```
 
 ## Usage
 
