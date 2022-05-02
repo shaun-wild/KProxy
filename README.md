@@ -35,7 +35,7 @@ interface MyInterface {
 Create your `KInvocationHandler`:
 
 ```kotlin
-class MyInvocationHandler : KInvocationHandler {
+object MyInvocationHandler : KInvocationHandler {
     override fun invokeKPropertyRead(proxy: Any?, kProperty: KProperty<*>): Any? {
         TODO("Not yet implemented")
     }

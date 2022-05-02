@@ -22,7 +22,7 @@ object KProxy {
      * @param loader The classloader to use.
      * @param T The interface class being proxied.
      * @throws IllegalArgumentException if any of the restrictions on the parameters that may be passed to getProxyClass are violated
-     * @throws SecurityException if a security manager, s, is present and any of the following conditions is met:
+     * @throws SecurityException see [Proxy.newProxyInstance]
      * @see Proxy.newProxyInstance
      * */
     inline fun <reified T : Any> newProxyInstance(
@@ -36,7 +36,7 @@ object KProxy {
      * @param loader The classloader to use.
      * @param kClass The interface class being proxied.
      * @throws IllegalArgumentException if any of the restrictions on the parameters that may be passed to getProxyClass are violated
-     * @throws SecurityException if a security manager, s, is present and any of the following conditions is met:
+     * @throws SecurityException see [Proxy.newProxyInstance]
      * @see Proxy.newProxyInstance
      * */
     fun <T : Any> newProxyInstance(

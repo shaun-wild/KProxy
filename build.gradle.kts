@@ -4,7 +4,7 @@ plugins {
 }
 
 val groupId = "com.github.shaun-wild"
-val packageVersion = "1.0.0"
+val packageVersion = "1.0.2"
 
 group = groupId
 version = packageVersion
