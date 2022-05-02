@@ -3,6 +3,8 @@
 A lightweight Kotlin wrapper of the Proxy API.
 
 [![](https://jitpack.io/v/shaun-wild/KProxy.svg)](https://jitpack.io/#shaun-wild/KProxy)
+[![CI](https://github.com/shaun-wild/KProxy/actions/workflows/test.yml/badge.svg)](https://github.com/shaun-wild/KProxy/actions/workflows/test.yml)
+
 
 -----
 
