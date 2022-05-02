@@ -1,65 +1,70 @@
 package com.github.shaunwild
 
-import org.junit.jupiter.api.Assertions.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.reflect.KFunction
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty
 
 internal class KProxyTest {
 
+    private val proxyMock = mockk<KInvocationHandler>()
+    private val proxy = KProxy.newProxyInstance<TestInterface>(proxyMock)
+
     @Test
-    fun newProxyInstance_createsProxyInstance() {
-        val proxy = KProxy.newProxyInstance<TestInterface>(TestInvocationHandler)
+    fun kInvocationHandler_invokeProperty() {
+        every { proxyMock.invokeKPropertyRead(any(), any()) } returns KPROPERTY
+        assertEquals(KPROPERTY, proxy.foo)
+        assertEquals(KPROPERTY, proxy.bar)
+        verify(atLeast = 2) { proxyMock.invokeKPropertyRead(any(), any()) }
+    }
+
+    @Test
+    fun kInvocationHandler_invokeKFunction_returnsProxyValue() {
+        every { proxyMock.invokeKFunction(any(), any(), any()) } returns KFUNCTION
+        assertEquals(KFUNCTION, proxy.getBaz())
+        verify { proxyMock.invokeKFunction(any(), any(), any()) }
+    }
+
+    @Test
+    fun kInvocationHandler_newProxyInstance_createsProxyInstance() {
+        val proxy = KProxy.newProxyInstance(proxyMock, TestInterface::class)
+
+        every { proxyMock.invokeKPropertyRead(any(), any()) } returns KPROPERTY
+        every { proxyMock.invokeKFunction(any(), any(), any()) } returns KFUNCTION
 
         assertEquals(KPROPERTY, proxy.foo)
-        assertEquals(KMUTABLE, proxy.bar)
+        assertEquals(KPROPERTY, proxy.bar)
         assertEquals(KFUNCTION, proxy.getBaz())
     }
 
     @Test
-    fun nonGeneric_newProxyInstance_createsProxyInstance() {
-        val proxy = KProxy.newProxyInstance(TestInvocationHandler, TestInterface::class)
-
-        assertEquals(KPROPERTY, proxy.foo)
-        assertEquals(KMUTABLE, proxy.bar)
-        assertEquals(KFUNCTION, proxy.getBaz())
+    fun kInvocationHandler_setProperty_invokesSetter() {
+        every { proxyMock.invokeKPropertyWrite(any(), any(), any()) } returns Unit
+        proxy.bar = KMUTATE
+        verify { proxyMock.invokeKPropertyWrite(any(), any(), any()) }
     }
 
     @Test
     fun isProxyClass_isProxyClass_returnsTrue() {
-        val proxy = KProxy.newProxyInstance<TestInterface>(TestInvocationHandler)
         assertTrue(KProxy.isProxyClass(proxy::class))
     }
 
     @Test
     fun getProxyClass_returnsProxyClass() {
-        val proxy = KProxy.newProxyInstance<TestInterface>(TestInvocationHandler)
         assertEquals(proxy::class, KProxy.getProxyClass(TestInterface::class))
     }
 
     interface TestInterface {
         val foo: String
-        var bar: Int
+        var bar: String
 
         fun getBaz(): String
     }
 
-    object TestInvocationHandler : KInvocationHandler {
-        override fun invokeKProperty(proxy: Any?, kProperty: KProperty<*>): Any? {
-            return KPROPERTY
-        }
-
-        override fun invokeKMutableProperty(proxy: Any?, kMutableProperty: KMutableProperty<*>, value: Any?): Any? {
-            return KMUTABLE
-        }
-
-        override fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any? {
-            return KFUNCTION
-        }
-    }
-
     companion object {
+        const val KMUTATE = "KMUTATE"
         const val KPROPERTY = "KPROPERTY"
         const val KMUTABLE = 25
         const val KFUNCTION = "KFUNCTION"

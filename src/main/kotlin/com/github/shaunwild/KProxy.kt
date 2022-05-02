@@ -64,35 +64,58 @@ object KProxy {
         Proxy.getProxyClass(ClassLoader.getSystemClassLoader(), *interfaces.map(KClass<*>::java).toTypedArray()).kotlin
 }
 
-class KInvocationHandlerAdapter(
+/**
+ * A Kotlin aware [InvocationHandler], it will map the java interface
+ * proxied calls to our Kotlin specific members.
+ * */
+interface KInvocationHandler {
+
+    /**
+     * Called whenever a `val` or `var` property is read.
+     * @param proxy The proxy instance.
+     * @param kProperty The [KProperty] that was read.
+     * @return The proxy value of the property.
+     * */
+    fun invokeKPropertyRead(proxy: Any?, kProperty: KProperty<*>): Any?
+
+    /**
+     * Called whenever a `var` property is written to.
+     * @param proxy The proxy instance.
+     * @param kMutableProperty The [KMutableProperty] that was written to.
+     * @return The proxy value to be returned from getting the property.
+     * */
+    fun invokeKPropertyWrite(proxy: Any?, kMutableProperty: KMutableProperty<*>, value: Any?)
+
+    /**
+     * Called when any other `fun` is called.
+     * @param proxy The proxy instance.
+     * @param kFunction The [KFunction] that was called.
+     * @return The proxy value to be returned from the function.
+     * */
+    fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any?
+}
+
+private class KInvocationHandlerAdapter(
     val kInvocationHandler: KInvocationHandler,
     val kClass: KClass<*>
 ) : InvocationHandler {
 
-    private val methodMutablePropertyMap = kClass.memberProperties
-        .filterIsInstance<KMutableProperty<*>>()
-        .flatMap { listOf(it.getter.javaMethod to it, it.setter.javaMethod to it) }
-        .toMap()
-
-    private val methodPropertyMap = kClass.memberProperties
-        .filter { it !is KMutableProperty<*> }
+    private val methodGetterMap = kClass.memberProperties
         .associateBy { it.getter.javaMethod }
 
+    private val methodSetterMap = kClass.memberProperties
+        .filterIsInstance<KMutableProperty<*>>()
+        .associateBy { it.setter.javaMethod }
+
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
-        methodMutablePropertyMap[method]?.let {
-            return kInvocationHandler.invokeKMutableProperty(proxy, it, args?.first())
+        methodGetterMap[method]?.let {
+            return kInvocationHandler.invokeKPropertyRead(proxy, it)
         }
 
-        methodPropertyMap[method]?.let {
-            return kInvocationHandler.invokeKProperty(proxy, it)
+        methodSetterMap[method]?.let {
+            return kInvocationHandler.invokeKPropertyWrite(proxy, it, args?.firstOrNull())
         }
 
         return kInvocationHandler.invokeKFunction(proxy, method.kotlinFunction!!, args)
     }
-}
-
-interface KInvocationHandler {
-    fun invokeKProperty(proxy: Any?, kProperty: KProperty<*>): Any?
-    fun invokeKMutableProperty(proxy: Any?, kMutableProperty: KMutableProperty<*>, value: Any?): Any?
-    fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any?
 }

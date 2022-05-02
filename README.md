@@ -2,6 +2,10 @@
 
 A lightweight Kotlin wrapper of the Proxy API.
 
+-----
+
+[![](https://jitpack.io/v/shaun-wild/KProxy.svg)](https://jitpack.io/#shaun-wild/KProxy)
+
 ## Usage
 
 Declare your interface:
@@ -15,17 +19,17 @@ interface MyInterface {
 Create your `KInvocationHandler`:
 
 ```kotlin
-object TestInvocationHandler : KInvocationHandler {
-    override fun invokeKProperty(proxy: Any?, kProperty: KProperty<*>): Any? {
-        TODO("Add my KProperty implementation!")
+class MyInvocationHandler : KInvocationHandler {
+    override fun invokeKPropertyRead(proxy: Any?, kProperty: KProperty<*>): Any? {
+        TODO("Not yet implemented")
     }
 
-    override fun invokeKMutableProperty(proxy: Any?, kMutableProperty: KMutableProperty<*>, value: Any?): Any? {
-        TODO("Add my KMutableProperty implementation!")
+    override fun invokeKPropertyWrite(proxy: Any?, kMutableProperty: KMutableProperty<*>, value: Any?) {
+        TODO("Not yet implemented")
     }
 
     override fun invokeKFunction(proxy: Any?, kFunction: KFunction<*>, args: Array<out Any?>?): Any? {
-        TODO("Add my KFunction implementation!")
+        TODO("Not yet implemented")
     }
 }
 ```
